@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import { PokemonContext } from '../context/PokemonContext';
 
 function User() {
-  const { setUser, user } = useContext(PokemonContext);
+  const { setUser, user, setPokemons } = useContext(PokemonContext);
   const database = firebase.database();
 
   const retrievePokemon = (userId) => {
@@ -11,9 +11,9 @@ function User() {
     firebase
       .database()
       .ref('/users/' + userId)
-      .once('pokemons')
+      .once('value')
       .then(function (snapshot) {
-        console.log(snapshot);
+        setPokemons(snapshot.val().pokemons);
       })
       .catch((err) => console.log(err));
   };
@@ -29,6 +29,7 @@ function User() {
         // The signed-in user info.
         console.log(result);
         setUser(result.user);
+        localStorage.setItem('user', JSON.stringify(result.user));
         retrievePokemon(result.user.uid);
       })
       .catch(function (error) {
@@ -55,6 +56,7 @@ function User() {
         // ...
         console.log(result);
         setUser(result.user);
+        localStorage.setItem('user', JSON.stringify(result.user));
         retrievePokemon(result.user.uid);
       })
       .catch(function (error) {
