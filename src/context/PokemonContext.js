@@ -45,8 +45,12 @@ function PokemonContextProvider(props) {
   let locations = centroidsData;
 
   useEffect(() => {
-    if (localStorage.getItem('user')) {
-      setUser(JSON.parse(localStorage.getItem('user')));
+    try {
+      if (localStorage.getItem('user')) {
+        setUser(JSON.parse(localStorage.getItem('user')));
+      }
+    } catch (e) {
+      console.log(e);
     }
   }, []);
 

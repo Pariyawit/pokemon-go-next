@@ -33,7 +33,11 @@ function User() {
 
   const handleSignOut = () => {
     firebase.auth().signOut();
-    localStorage.removeItem('user');
+    try {
+      localStorage.removeItem('user');
+    } catch (e) {
+      console.log(e);
+    }
     setUser(null);
     setLoading('logout');
     console.log('loggedOut');
@@ -59,7 +63,11 @@ function User() {
         var token = result.credential.accessToken;
         // The signed-in user info.
         setUser(result.user);
-        localStorage.setItem('user', JSON.stringify(result.user));
+        try {
+          localStorage.setItem('user', JSON.stringify(result.user));
+        } catch (e) {
+          console.log(e);
+        }
         retrievePokemon(result.user.uid);
       })
       .catch(function (error) {
@@ -79,7 +87,11 @@ function User() {
         // The signed-in user info.
         // ...
         setUser(result.user);
-        localStorage.setItem('user', JSON.stringify(result.user));
+        try {
+          localStorage.setItem('user', JSON.stringify(result.user));
+        } catch (e) {
+          console.log(e);
+        }
         retrievePokemon(result.user.uid);
       })
       .catch(function (error) {
