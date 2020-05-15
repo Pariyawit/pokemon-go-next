@@ -1,23 +1,33 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import * as firebase from 'firebase';
 import { PokemonContext } from '../context/PokemonContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
 
 function User() {
-  const { setUser, user, setPokemons, initState } = useContext(PokemonContext);
+  const [loading, setLoading] = useState(true);
+  const { setUser, user, setPokemons, initState, pokemons } = useContext(
+    PokemonContext
+  );
+
+  const catched = pokemons.reduce(
+    (total, p) => (p.status == 'caught' ? total + 1 : total),
+    0
+  );
 
   const retrievePokemon = (userId) => {
-    console.log('hi');
+    setLoading(true);
     firebase
       .database()
       .ref('/users/' + userId)
       .once('value')
       .then(function (snapshot) {
         setPokemons(snapshot.val().pokemons);
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setLoading(false);
       });
   };
 
@@ -25,10 +35,21 @@ function User() {
     firebase.auth().signOut();
     localStorage.removeItem('user');
     setUser(null);
-    setPokemons(initState);
+    setLoading('logout');
+    console.log('loggedOut');
   };
 
+  useEffect(() => {
+    if (loading == 'logout') {
+      setTimeout(() => {
+        setPokemons(initState);
+        setLoading(false);
+      }, 1500);
+    }
+  }, [loading]);
+
   const signInFacebook = () => {
+    setLoading(true);
     const provider = new firebase.auth.FacebookAuthProvider();
     firebase
       .auth()
@@ -37,24 +58,17 @@ function User() {
         // This gives you a Facebook Access Token. You can use it to access the Facebook API.
         var token = result.credential.accessToken;
         // The signed-in user info.
-        console.log(result);
         setUser(result.user);
         localStorage.setItem('user', JSON.stringify(result.user));
         retrievePokemon(result.user.uid);
       })
       .catch(function (error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // The email of the user's account used.
-        var email = error.email;
-        // The firebase.auth.AuthCredential type that was used.
-        var credential = error.credential;
-        // ...
+        setLoading(false);
       });
   };
 
   const signInGoogle = () => {
+    setLoading(true);
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase
       .auth()
@@ -64,48 +78,69 @@ function User() {
         var token = result.credential.accessToken;
         // The signed-in user info.
         // ...
-        console.log(result);
         setUser(result.user);
         localStorage.setItem('user', JSON.stringify(result.user));
         retrievePokemon(result.user.uid);
       })
       .catch(function (error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // The email of the user's account used.
-        var email = error.email;
-        // The firebase.auth.AuthCredential type that was used.
-        var credential = error.credential;
-        // ...
+        setLoading(false);
       });
   };
+
+  useEffect(() => {
+    if (pokemons.length == 0) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [pokemons]);
+
   return (
     <div className='container container--blue wrapper'>
       <div className='user'>
-        {user && <h1>Hi {user.displayName}</h1>}
-        {user ? (
-          <button className='btn' onClick={handleSignOut}>
-            Sign Out
-          </button>
-        ) : (
-          <div className='login'>
-            <p>Log in to save your progress</p>
-            <div className='login__icon'>
-              <div>
-                <button className='btn btn-icon' onClick={signInGoogle}>
-                  <FontAwesomeIcon className='fa-icon' icon={faGoogle} /> Login
-                  with Google
-                </button>
-              </div>
-              <div>
-                <button className='btn btn-icon' onClick={signInFacebook}>
-                  <FontAwesomeIcon className='fa-icon' icon={faFacebook} />{' '}
-                  Login with Facebook
-                </button>
-              </div>
-            </div>
+        {loading ? (
+          <div className='loading'>
+            <img src='/pokeball-spining.gif' />
           </div>
+        ) : (
+          <>
+            {user ? (
+              <div className='login profile'>
+                <div>
+                  <img className='profile__photo' src={user.photoURL} />
+                </div>
+                <h4 className='profile__name'>{user.displayName}</h4>
+                <div className='submenu submenu--space-between'>
+                  <div>Pokémon</div>
+                  <div className='number'>{`${catched}/${pokemons.length}`}</div>
+                </div>
+                <button
+                  className='btn btn--outline btn--sm'
+                  onClick={handleSignOut}
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <div className='login'>
+                <p>Log in to save your progress</p>
+                <div className='login__icon'>
+                  <div>
+                    <button className='btn btn-icon' onClick={signInGoogle}>
+                      <FontAwesomeIcon className='fa-icon' icon={faGoogle} />{' '}
+                      Login with Google
+                    </button>
+                  </div>
+                  <div>
+                    <button className='btn btn-icon' onClick={signInFacebook}>
+                      <FontAwesomeIcon className='fa-icon' icon={faFacebook} />{' '}
+                      Login with Facebook
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

@@ -40,7 +40,7 @@ body {
     a {
       color: $gray !important;
     }
-    .profile {
+    .profile_icon {
       width: 25px;
       height: 25px;
       top: 3px;
@@ -340,6 +340,15 @@ a {
     max-width: 400px;
     text-align: left;
   }
+  &--outline {
+    background: none;
+    color: $dark;
+    border: 2px solid $dark;
+  }
+  &--sm {
+    padding: 0.8rem;
+    font-size: 1.2rem;
+  }
 }
 
 .login {
@@ -352,8 +361,21 @@ a {
   }
 }
 
+.profile {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  &__photo {
+    max-width: 100px;
+  }
+  &__name {
+    font-size: 1.6rem;
+  }
+}
+
 .user {
   max-width: 400px;
+  width: 100%;
 }
 
 .wrapper {

@@ -78,10 +78,7 @@ function PokemonContextProvider(props) {
 
   //init game
   useEffect(() => {
-    console.log(user);
-
     if (data) {
-      console.log(data);
       const updatePokemons = data.pokemons.map((p) => ({
         ...p,
         status: 'wild',

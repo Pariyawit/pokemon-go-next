@@ -47,8 +47,8 @@ function Header() {
               {user ? (
                 <span>
                   <img
-                    className={`profile ${
-                      pathname.includes('/user') && 'profile--active'
+                    className={`profile_icon ${
+                      pathname.includes('/user') && 'profile_icon--active'
                     } `}
                     src={user.photoURL}
                   />
