@@ -40,6 +40,15 @@ body {
     a {
       color: $gray !important;
     }
+    .profile {
+      width: 25px;
+      height: 25px;
+      top: 3px;
+      position: relative;
+      &--active {
+        box-shadow: 0 0px 0px 2px $blue;
+      }
+    }
   }
 }
 
@@ -50,6 +59,11 @@ body {
 .pokedex-icon--active {
   color: $red;
 }
+
+.user-icon--active {
+  color: $blue;
+}
+
 main {
   margin-top: 55px;
 }
@@ -114,6 +128,9 @@ main {
   min-height: calc(var(--vh, 1vh) * 100 - 55px - 3.2rem);
   &--red {
     background-color: $red;
+  }
+  &--blue {
+    background-color: $blue;
   }
 }
 
@@ -300,4 +317,46 @@ a {
   justify-items: center;
   justify-content: center;
   margin-top: calc(50vh - 120px);
+}
+
+.btn {
+  color: $light;
+  background-color: $dark;
+  font-family: inherit;
+  padding: 1.6rem;
+  font-size: 1.6rem;
+  border: none;
+  &:hover {
+    background-color: #175f57;
+  }
+  &:active {
+    position: relative;
+    top: 1px;
+  }
+  &-icon {
+    font-size: 1.2rem;
+    margin-top: 1.6rem;
+    width: 100%;
+    max-width: 400px;
+    text-align: left;
+  }
+}
+
+.login {
+  color: $light;
+  &__icon {
+  }
+  .fa-icon {
+    font-size: 1.6rem;
+    margin: 0 0rem 0 0rem;
+  }
+}
+
+.user {
+  max-width: 400px;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
 }

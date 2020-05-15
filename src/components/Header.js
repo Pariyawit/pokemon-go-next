@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkedAlt, faTh } from '@fortawesome/free-solid-svg-icons';
+import {
+  faMapMarkedAlt,
+  faTh,
+  faUserCircle,
+} from '@fortawesome/free-solid-svg-icons';
 import { useLocation } from 'react-router-dom';
+import { PokemonContext } from '../context/PokemonContext';
 
 function Header() {
   const { pathname } = useLocation();
+  const { user } = useContext(PokemonContext);
+
   return (
     <header className='header'>
       <Link to='/'>
@@ -36,7 +43,26 @@ function Header() {
             </Link>
           </li>
           <li className='nav__item'>
-            <Link to='/user'>USER</Link>
+            <Link to='/user'>
+              {user ? (
+                <span>
+                  <img
+                    className={`profile ${
+                      pathname.includes('/user') && 'profile--active'
+                    } `}
+                    src={user.photoURL}
+                  />
+                </span>
+              ) : (
+                <span
+                  className={`user-icon ${
+                    pathname.includes('/user') && 'user-icon--active'
+                  } `}
+                >
+                  <FontAwesomeIcon icon={faUserCircle} />
+                </span>
+              )}
+            </Link>
           </li>
         </ul>
       </nav>

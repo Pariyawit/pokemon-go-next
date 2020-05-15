@@ -27,15 +27,9 @@ function writePokemonData(userId, pokemons) {
     });
 }
 
-var storage = null;
-try {
-  storage = window.sessionStorage || null;
-} catch (e) {
-  storage = null;
-}
-
 function PokemonContextProvider(props) {
   const [pokemons, setPokemons] = useState([]);
+  const [initState, setInitState] = useState([]);
   const [user, setUser] = useState(null);
   const [pokeball, setPokeball] = useState();
   const [bounds, setBounds] = useState();
@@ -67,11 +61,6 @@ function PokemonContextProvider(props) {
       return p;
     });
     setPokemons(updatePokemons);
-    try {
-      storage.setItem('pokemon-go', JSON.stringify(updatePokemons));
-    } catch (e) {
-      console.log(e);
-    }
     if (user) {
       writePokemonData(user.uid, updatePokemons);
     }
@@ -90,29 +79,26 @@ function PokemonContextProvider(props) {
   //init game
   useEffect(() => {
     console.log(user);
-    if (user) {
-      firebase
-        .database()
-        .ref('/users/' + user.uid)
-        .once('value')
-        .then(function (snapshot) {
-          setPokemons(snapshot.val().pokemons);
-        })
-        .catch((err) => console.log(err));
-    } else {
-      if (data) {
-        console.log(data);
-        const updatePokemons = data.pokemons.map((p) => ({
-          ...p,
-          status: 'wild',
-          location: location(),
-        }));
+
+    if (data) {
+      console.log(data);
+      const updatePokemons = data.pokemons.map((p) => ({
+        ...p,
+        status: 'wild',
+        location: location(),
+      }));
+      setInitState(updatePokemons);
+      if (user) {
+        firebase
+          .database()
+          .ref('/users/' + user.uid)
+          .once('value')
+          .then(function (snapshot) {
+            setPokemons(snapshot.val().pokemons);
+          })
+          .catch((err) => console.log(err));
+      } else {
         setPokemons(updatePokemons);
-        try {
-          storage.setItem('pokemon-go', JSON.stringify(updatePokemons));
-        } catch (e) {
-          console.log(e);
-        }
       }
     }
   }, [data]);
@@ -131,6 +117,7 @@ function PokemonContextProvider(props) {
     user,
     setUser,
     setPokemons,
+    initState,
   };
   return (
     <PokemonContext.Provider value={context}>

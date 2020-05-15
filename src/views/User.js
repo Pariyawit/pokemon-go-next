@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
 import * as firebase from 'firebase';
 import { PokemonContext } from '../context/PokemonContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
 
 function User() {
-  const { setUser, user, setPokemons } = useContext(PokemonContext);
-  const database = firebase.database();
+  const { setUser, user, setPokemons, initState } = useContext(PokemonContext);
 
   const retrievePokemon = (userId) => {
     console.log('hi');
@@ -15,7 +16,16 @@ function User() {
       .then(function (snapshot) {
         setPokemons(snapshot.val().pokemons);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleSignOut = () => {
+    firebase.auth().signOut();
+    localStorage.removeItem('user');
+    setUser(null);
+    setPokemons(initState);
   };
 
   const signInFacebook = () => {
@@ -71,11 +81,33 @@ function User() {
       });
   };
   return (
-    <div>
-      {user && <h1>Hi {user.displayName}</h1>}
-      <button onClick={() => firebase.auth().signOut()}>Sign Out</button>
-      <button onClick={signInGoogle}>Sign In with Google Account</button>
-      <button onClick={signInFacebook}>Sign In with Facebook Account</button>
+    <div className='container container--blue wrapper'>
+      <div className='user'>
+        {user && <h1>Hi {user.displayName}</h1>}
+        {user ? (
+          <button className='btn' onClick={handleSignOut}>
+            Sign Out
+          </button>
+        ) : (
+          <div className='login'>
+            <p>Log in to save your progress</p>
+            <div className='login__icon'>
+              <div>
+                <button className='btn btn-icon' onClick={signInGoogle}>
+                  <FontAwesomeIcon className='fa-icon' icon={faGoogle} /> Login
+                  with Google
+                </button>
+              </div>
+              <div>
+                <button className='btn btn-icon' onClick={signInFacebook}>
+                  <FontAwesomeIcon className='fa-icon' icon={faFacebook} />{' '}
+                  Login with Facebook
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
