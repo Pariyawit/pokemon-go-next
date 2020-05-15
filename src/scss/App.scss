@@ -1,0 +1,303 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import './variable';
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: 'Press Start 2P', Sans-Serif;
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: calc(100% - 3.2rem);
+  z-index: 999;
+  height: 55px;
+  background: $dark;
+  color: $gray;
+  align-items: center;
+  padding: 0 1.6rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.nav {
+  text-align: right;
+  &__list {
+    padding: 0;
+    margin: 0;
+    margin-top: -4px;
+  }
+  &__item {
+    display: inline;
+    font-size: 2.4rem;
+    padding-left: 1.6rem;
+    a {
+      color: $gray !important;
+    }
+  }
+}
+
+.map-icon--active {
+  color: $green;
+}
+
+.pokedex-icon--active {
+  color: $red;
+}
+main {
+  margin-top: 55px;
+}
+
+.map {
+  width: 100%;
+  height: calc(100vh - 55px);
+}
+
+.pokemon {
+  border: 5px solid $red;
+  border-radius: 50%;
+  background-color: #fff;
+  display: flex;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-origin: content-box;
+  padding: 5px;
+  position: absolute;
+  top: -25px;
+  left: -25px;
+  &--pokeball {
+    background-image: url('/pokeball.png') !important;
+    border: none;
+    padding: 0;
+    width: 30px !important;
+    height: 31px !important;
+    animation: catching 1s;
+    animation-iteration-count: 1;
+  }
+  transition: transform ease-in-out 0.5s;
+}
+
+.marker {
+  height: 10px;
+  width: 10px;
+  background-color: red;
+  border-radius: 5px;
+}
+
+.message {
+  width: 100%;
+  background: rgba(0, 46, 41, 0.66);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+
+  &__text {
+    color: $light;
+    margin: 1.2rem;
+    font-size: 1.2rem;
+    line-height: 1.6rem;
+    text-align: center;
+  }
+}
+
+///POkedex
+.container {
+  padding: 1.6rem;
+  min-height: calc(100vh - 55px - 3.2rem);
+  min-height: calc(var(--vh, 1vh) * 100 - 55px - 3.2rem);
+  &--red {
+    background-color: $red;
+  }
+}
+
+.submenu {
+  display: flex;
+  color: $light;
+  margin-bottom: 1.6rem;
+  &--space-between {
+    justify-content: space-between;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-auto-rows: 1fr;
+  --stagger-delay: 100ms;
+}
+
+@keyframes cardEntrace {
+  from {
+    opacity: 0;
+    transform: scal(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.grid::before {
+  content: '';
+  width: 0;
+  padding-bottom: 100%;
+  grid-row: 1 / 1;
+  grid-column: 1 / 1;
+}
+
+.grid > *:first-child {
+  grid-row: 1 / 1;
+  grid-column: 1 / 1;
+}
+
+.pokedex {
+  width: 100%;
+  grid-gap: 0.8rem;
+  min-height: 100vh;
+
+  &__item {
+    background-color: $gray;
+    border-radius: 10px;
+    padding: 0.8rem;
+
+    animation: cardEntrace 700ms ease-out;
+    animation-fill-mode: backwards;
+
+    a {
+      text-decoration: none;
+      padding: 0;
+    }
+
+    &--notfound {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      p {
+        text-align: center;
+        padding: 0;
+        margin: 0;
+        font-size: 2.4rem;
+        color: $light;
+      }
+    }
+  }
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 2.4rem;
+    height: 100%;
+  }
+  &__image {
+    height: 100%;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 5px;
+    background-origin: content-box;
+  }
+
+  &__title {
+    font-size: 0.8rem;
+    text-align: center;
+    line-height: 2.4rem;
+  }
+}
+
+//animation
+@keyframes catching {
+  0% {
+  }
+  100% {
+    width: 0px !important;
+    height: 0px !important;
+    opacity: 0;
+  }
+}
+
+.detail {
+  display: grid;
+  width: 100%;
+  animation: cardEntrace 700ms ease-out;
+  animation-fill-mode: backwards;
+  grid-gap: 0.8rem;
+  @media (min-width: 600px) {
+    grid-template-columns: 1fr 1fr;
+    height: 60vh;
+  }
+
+  &__card {
+    background-color: $gray;
+    padding: 1.2rem;
+    border-radius: 20px;
+  }
+
+  &__image {
+    border-radius: 5px;
+    background: $light;
+    padding: 0.8rem;
+    text-align: center;
+    height: calc(100% - 1.6rem);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-origin: content-box;
+    min-height: 150px;
+    img {
+      // width: 100%;
+      height: 150px;
+    }
+  }
+}
+
+.table {
+  background: $gray;
+  color: $dark;
+  align-self: baseline;
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    &--head {
+      background: $dark;
+      color: $light;
+    }
+  }
+  &__item {
+    padding: 0.8rem;
+    flex-grow: 1;
+  }
+  &__list {
+    margin-top: -0.8rem;
+    margin-bottom: 0.8rem;
+    padding-left: 1.6rem;
+    list-style: none;
+    li {
+      line-height: 2.4rem;
+    }
+  }
+}
+
+.text-right {
+  text-align: right;
+}
+
+.loading {
+  display: flex;
+  justify-items: center;
+  justify-content: center;
+  margin-top: calc(50vh - 120px);
+}
