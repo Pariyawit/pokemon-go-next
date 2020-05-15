@@ -71,6 +71,12 @@ main {
 .map {
   width: 100%;
   height: calc(100vh - 55px);
+  background-color: $green;
+  .loading {
+    background-color: $green;
+    padding-top: calc(50vh - 120px);
+    margin: 0;
+  }
 }
 
 .pokemon {

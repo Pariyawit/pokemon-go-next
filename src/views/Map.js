@@ -79,6 +79,7 @@ function Map() {
   const [distance, setDistance] = useState();
   const [nw, setNW] = useState();
   const [se, setSE] = useState();
+  const [loading, setLoading] = useState(true);
   const {
     pokemons,
     zoom,
@@ -101,6 +102,13 @@ function Map() {
     setPokeball(null);
     setBounds(e.bounds);
   };
+  useEffect(() => {
+    if (pokemons.length == 0) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [pokemons]);
 
   useEffect(() => {
     setCount(scanArea(pokemons, nw, se));
@@ -121,25 +129,33 @@ function Map() {
     });
   return (
     <div className='map'>
-      <GoogleMapReact
-        bootstrapURLKeys={{ key: MAP_KEY }}
-        center={center}
-        zoom={zoom}
-        onChange={handleChange}
-        options={createMapOptions}
-        onZoomAnimationStart={() => setStatus('zooming')}
-        onZoomAnimationEnd={() => setStatus('idle')}
-      >
-        {status === 'idle' && pokemons_list}
-      </GoogleMapReact>
-      <Message
-        zoom={zoom}
-        count={count}
-        distance={distance}
-        bounds={{ nw, se }}
-        pokeball={pokeball}
-        status={status}
-      />
+      {loading ? (
+        <div className='loading'>
+          <img src='/pokeball-spining.gif' />
+        </div>
+      ) : (
+        <>
+          <GoogleMapReact
+            bootstrapURLKeys={{ key: MAP_KEY }}
+            center={center}
+            zoom={zoom}
+            onChange={handleChange}
+            options={createMapOptions}
+            onZoomAnimationStart={() => setStatus('zooming')}
+            onZoomAnimationEnd={() => setStatus('idle')}
+          >
+            {status === 'idle' && pokemons_list}
+          </GoogleMapReact>
+          <Message
+            zoom={zoom}
+            count={count}
+            distance={distance}
+            bounds={{ nw, se }}
+            pokeball={pokeball}
+            status={status}
+          />
+        </>
+      )}
     </div>
   );
 }
