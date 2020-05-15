@@ -104,7 +104,7 @@ function Map() {
 
   useEffect(() => {
     setCount(scanArea(pokemons, nw, se));
-  }, [pokemons]);
+  }, []);
 
   const pokemons_list = pokemons
     .filter((p) => p.status !== 'caught')

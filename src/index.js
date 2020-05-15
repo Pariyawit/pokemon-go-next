@@ -6,9 +6,23 @@ import { PokemonContextProvider } from './context/PokemonContext';
 
 import ApolloClient from 'apollo-boost';
 
+import * as firebase from 'firebase';
+
 const client = new ApolloClient({
   uri: 'https://graphql-pokemon.now.sh/',
 });
+
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_FIREBASE_apiKey,
+  authDomain: process.env.REACT_APP_FIREBASE_authDomain,
+  databaseURL: process.env.REACT_APP_FIREBASE_databaseURL,
+  projectId: process.env.REACT_APP_FIREBASE_projectId,
+  storageBucket: process.env.REACT_APP_FIREBASE_storageBucket,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_messagingSenderId,
+  appId: process.env.REACT_APP_FIREBASE_appId,
+  measurementId: process.env.REACT_APP_FIREBASE_measurementId,
+};
+firebase.initializeApp(firebaseConfig);
 
 ReactDOM.render(
   <ApolloProvider client={client}>

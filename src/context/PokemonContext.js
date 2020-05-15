@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import { centroidsData } from '../data/centroidsData';
+import * as firebase from 'firebase';
 
 const POKEMONS = gql`
   {
@@ -17,6 +18,16 @@ const POKEMONS = gql`
 
 const PokemonContext = React.createContext();
 
+function writePokemonData(userId, pokemons) {
+  const database = firebase.database();
+  firebase
+    .database()
+    .ref('users/' + userId)
+    .set({
+      pokemons: pokemons,
+    });
+}
+
 var storage = null;
 try {
   storage = window.sessionStorage || null;
@@ -26,6 +37,7 @@ try {
 
 function PokemonContextProvider(props) {
   const [pokemons, setPokemons] = useState([]);
+  const [user, setUser] = useState(null);
   const [pokeball, setPokeball] = useState();
   const [bounds, setBounds] = useState();
   const [center, setCenter] = useState({
@@ -55,6 +67,9 @@ function PokemonContextProvider(props) {
     } catch (e) {
       console.log(e);
     }
+    if (user) {
+      writePokemonData(user.uid, updatePokemons);
+    }
   };
 
   const location = () => {
@@ -67,15 +82,29 @@ function PokemonContextProvider(props) {
     return l;
   };
 
+  //init game
   useEffect(() => {
-    if (storage && storage.getItem('pokemon-go')) {
-      try {
-        setPokemons(JSON.parse(storage.getItem('pokemon-go')));
-      } catch (e) {
-        console.log(e);
-      }
+    console.log(user);
+    if (user) {
+      firebase
+        .database()
+        .ref('/users/' + user.uid)
+        .once('value')
+        .then(function (snapshot) {
+          console.log(snapshot);
+          console.log('success');
+        })
+        .catch((err) => console.log(err));
+      // }
+      // if (storage && storage.getItem('pokemon-go')) {
+      //   try {
+      //     setPokemons(JSON.parse(storage.getItem('pokemon-go')));
+      //   } catch (e) {
+      //     console.log(e);
+      //   }
     } else {
       if (data) {
+        console.log(data);
         const updatePokemons = data.pokemons.map((p) => ({
           ...p,
           status: 'wild',
@@ -89,7 +118,7 @@ function PokemonContextProvider(props) {
         }
       }
     }
-  }, [data]);
+  }, []);
 
   const context = {
     pokemons,
@@ -102,6 +131,7 @@ function PokemonContextProvider(props) {
     setPokeball,
     bounds,
     setBounds,
+    user,
   };
   return (
     <PokemonContext.Provider value={context}>

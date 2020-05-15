@@ -35,6 +35,9 @@ function Header() {
               </span>
             </Link>
           </li>
+          <li className='nav__item'>
+            <Link to='/user'>USER</Link>
+          </li>
         </ul>
       </nav>
     </header>

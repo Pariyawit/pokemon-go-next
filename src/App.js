@@ -5,6 +5,7 @@ import './scss/App.scss';
 import Header from './components/Header';
 import Map from './views/Map';
 import Pokedex from './views/Pokedex';
+import User from './views/User';
 
 function App() {
   return (
@@ -17,6 +18,9 @@ function App() {
           </Route>
           <Route path='/pokedex'>
             <Pokedex />
+          </Route>
+          <Route path='/user'>
+            <User />
           </Route>
         </Switch>
       </main>
