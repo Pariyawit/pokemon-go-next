@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@apollo/react-hooks';
-import { gql } from 'apollo-boost';
+// import { useQuery } from '@apollo/react-hooks';
+// import { gql } from 'apollo-boost';
 import { centroidsData } from '../data/centroidsData';
 import * as firebase from 'firebase';
+import { pokemonsData } from '../data/pokemonsData.js';
 
-const POKEMONS = gql`
-  {
-    pokemons(first: 151) {
-      id
-      number
-      name
-      image
-      maxHP
-    }
-  }
-`;
+// const POKEMONS = gql`
+//   {
+//     pokemons(first: 151) {
+//       id
+//       number
+//       name
+//       image
+//       maxHP
+//     }
+//   }
+// `;
 
 const PokemonContext = React.createContext();
 
@@ -38,7 +39,10 @@ function PokemonContextProvider(props) {
     lng: 0,
   });
   const [zoom, setZoom] = useState(2);
-  const { loading, error, data } = useQuery(POKEMONS);
+  // const { loading, error, data } = useQuery(POKEMONS);
+  const loading = false;
+  const error = false;
+  const data = { pokemons: pokemonsData };
   // if (loading) return <p>Loading...</p>;
   // if (error) return <p>Error :(</p>;
 
@@ -102,7 +106,7 @@ function PokemonContextProvider(props) {
         setPokemons(updatePokemons);
       }
     }
-  }, [data]);
+  }, []);
 
   const context = {
     pokemons,
