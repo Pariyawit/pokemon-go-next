@@ -1,3 +1,8 @@
-## Pokemon Go
+# Pokemon Go
 
-Graphql, Firebase
+Firebase
+React
+
+## Run
+
+run 'npm run start'
