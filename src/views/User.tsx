@@ -1,12 +1,9 @@
 'use client';
 
 import React, { useContext, useState, useEffect } from 'react';
-import { signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, signOut } from 'firebase/auth';
-import { ref, get } from 'firebase/database';
-import { auth, database } from '@/lib/firebase';
 import { PokemonContext } from '@/context/PokemonContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 function User() {
   const [loading, setLoading] = useState<boolean | string>(true);
@@ -25,22 +22,18 @@ function User() {
 
   const retrievePokemon = (userId: string) => {
     setLoading(true);
-    const userRef = ref(database, '/users/' + userId);
-    get(userRef)
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          setPokemons(snapshot.val().pokemons);
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
+    try {
+      const savedPokemons = localStorage.getItem(`user_${userId}_pokemons`);
+      if (savedPokemons) {
+        setPokemons(JSON.parse(savedPokemons));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
   };
 
   const handleSignOut = () => {
-    signOut(auth);
     try {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('user');
@@ -62,64 +55,28 @@ function User() {
     }
   }, [loading, initState, setPokemons]);
 
-  const signInFacebook = () => {
-    setLoading(true);
-    const provider = new FacebookAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        setUser({
-          uid: user.uid,
-          photoURL: user.photoURL || '',
-          displayName: user.displayName || '',
-        });
-        try {
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('user', JSON.stringify({
-              uid: user.uid,
-              photoURL: user.photoURL,
-              displayName: user.displayName,
-            }));
-          }
-        } catch (e) {
-          console.log(e);
-        }
-        retrievePokemon(user.uid);
-      })
-      .catch((error) => {
-        console.log(error);
-        setLoading(false);
-      });
-  };
+  const [username, setUsername] = useState('');
 
-  const signInGoogle = () => {
+  const handleLocalSignIn = () => {
+    if (!username.trim()) return;
+
     setLoading(true);
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        setUser({
-          uid: user.uid,
-          photoURL: user.photoURL || '',
-          displayName: user.displayName || '',
-        });
-        try {
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('user', JSON.stringify({
-              uid: user.uid,
-              photoURL: user.photoURL,
-              displayName: user.displayName,
-            }));
-          }
-        } catch (e) {
-          console.log(e);
-        }
-        retrievePokemon(user.uid);
-      })
-      .catch((error) => {
-        console.log(error);
-        setLoading(false);
-      });
+    const userId = `local_${username.trim()}`;
+    const newUser = {
+      uid: userId,
+      photoURL: '/default-avatar.png',
+      displayName: username.trim(),
+    };
+
+    setUser(newUser);
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(newUser));
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    retrievePokemon(userId);
   };
 
   useEffect(() => {
@@ -158,20 +115,24 @@ function User() {
               </div>
             ) : (
               <div className="login">
-                <p>Log in to save your progress</p>
-                <div className="login__icon">
-                  <div>
-                    <button className="btn btn-icon" onClick={signInGoogle}>
-                      <FontAwesomeIcon className="fa-icon" icon={faGoogle} />{' '}
-                      Login with Google
-                    </button>
-                  </div>
-                  <div>
-                    <button className="btn btn-icon" onClick={signInFacebook}>
-                      <FontAwesomeIcon className="fa-icon" icon={faFacebook} />{' '}
-                      Login with Facebook
-                    </button>
-                  </div>
+                <p>Enter your name to save your progress</p>
+                <div className="login__form">
+                  <input
+                    type="text"
+                    placeholder="Enter your name"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleLocalSignIn()}
+                    className="form-input"
+                  />
+                  <button
+                    className="btn btn-icon"
+                    onClick={handleLocalSignIn}
+                    disabled={!username.trim()}
+                  >
+                    <FontAwesomeIcon className="fa-icon" icon={faUser} />{' '}
+                    Start Playing
+                  </button>
                 </div>
               </div>
             )}

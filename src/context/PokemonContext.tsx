@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { ref, set, get } from 'firebase/database';
-import { database } from '@/lib/firebase';
 import { centroidsData } from '@/data/centroidsData';
 import { pokemonsData } from '@/data/pokemonsData';
 
@@ -45,10 +43,13 @@ interface PokemonContextType {
 const PokemonContext = createContext<PokemonContextType | undefined>(undefined);
 
 function writePokemonData(userId: string, pokemons: Pokemon[]) {
-  const userRef = ref(database, 'users/' + userId);
-  set(userRef, {
-    pokemons: pokemons,
-  });
+  try {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`user_${userId}_pokemons`, JSON.stringify(pokemons));
+    }
+  } catch (error) {
+    console.error('Error saving Pokemon data:', error);
+  }
 }
 
 interface PokemonContextProviderProps {
@@ -120,19 +121,17 @@ function PokemonContextProvider({ children }: PokemonContextProviderProps) {
       setInitState(updatePokemons);
 
       if (user) {
-        const userRef = ref(database, '/users/' + user.uid);
-        get(userRef)
-          .then((snapshot) => {
-            if (snapshot.exists()) {
-              setPokemons(snapshot.val().pokemons);
-            } else {
-              setPokemons(updatePokemons);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
+        try {
+          const savedPokemons = localStorage.getItem(`user_${user.uid}_pokemons`);
+          if (savedPokemons) {
+            setPokemons(JSON.parse(savedPokemons));
+          } else {
             setPokemons(updatePokemons);
-          });
+          }
+        } catch (error) {
+          console.error('Error loading Pokemon data:', error);
+          setPokemons(updatePokemons);
+        }
       } else {
         setPokemons(updatePokemons);
       }
