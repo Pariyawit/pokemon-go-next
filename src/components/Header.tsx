@@ -1,27 +1,29 @@
+'use client';
+
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faMapMarkedAlt,
   faTh,
   faUserCircle,
 } from '@fortawesome/free-solid-svg-icons';
-import { useLocation } from 'react-router-dom';
-import { PokemonContext } from '../context/PokemonContext';
+import { PokemonContext } from '@/context/PokemonContext';
 
 function Header() {
-  const { pathname } = useLocation();
+  const pathname = usePathname();
   const { user } = useContext(PokemonContext);
 
   return (
-    <header className='header'>
-      <Link to='/'>
+    <header className="header">
+      <Link href="/">
         <div>PokémonGo</div>
       </Link>
-      <nav className='nav'>
-        <ul className='nav__list'>
-          <li className='nav__item'>
-            <Link to='/'>
+      <nav className="nav">
+        <ul className="nav__list">
+          <li className="nav__item">
+            <Link href="/">
               <span
                 className={`map-icon ${
                   pathname === '/' && 'map-icon--active'
@@ -31,8 +33,8 @@ function Header() {
               </span>
             </Link>
           </li>
-          <li className='nav__item'>
-            <Link to='/pokedex'>
+          <li className="nav__item">
+            <Link href="/pokedex">
               <span
                 className={`pokedex-icon ${
                   pathname.includes('/pokedex') && 'pokedex-icon--active'
@@ -42,8 +44,8 @@ function Header() {
               </span>
             </Link>
           </li>
-          <li className='nav__item'>
-            <Link to='/user'>
+          <li className="nav__item">
+            <Link href="/user">
               {user ? (
                 <span>
                   <img
@@ -51,6 +53,7 @@ function Header() {
                       pathname.includes('/user') && 'profile_icon--active'
                     } `}
                     src={user.photoURL}
+                    alt="Profile"
                   />
                 </span>
               ) : (

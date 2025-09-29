@@ -1,11 +1,23 @@
+'use client';
+
 import React, { useState, useContext, useEffect } from 'react';
 import GoogleMapReact from 'google-map-react';
-import Pokemon from '../components/Pokemon';
-import Message from '../components/Message';
+import Pokemon from '@/components/Pokemon';
+import Message from '@/components/Message';
+import { PokemonContext } from '@/context/PokemonContext';
 
-import { PokemonContext } from '../context/PokemonContext';
+interface MapBounds {
+  nw: { lat: number; lng: number };
+  se: { lat: number; lng: number };
+}
 
-function createMapOptions(maps) {
+interface PokemonType {
+  id: string;
+  status: string;
+  location: { lat: number; lng: number };
+}
+
+function createMapOptions(maps: any) {
   return {
     zoomControlOptions: {
       position: maps.ControlPosition.TOP_RIGHT,
@@ -18,7 +30,7 @@ function createMapOptions(maps) {
   };
 }
 
-function distance(nw, se, p) {
+function distance(nw: { lat: number; lng: number }, se: { lat: number; lng: number }, p: PokemonType) {
   const { min, abs, sqrt, pow } = Math;
   const min_lat = nw.lat;
   const max_lat = se.lat;
@@ -28,10 +40,10 @@ function distance(nw, se, p) {
   const lat = p.location.lat;
   const lng = p.location.lng;
 
-  if (p.lat >= min_lat && p.lat <= min.lat) {
+  if (lat >= min_lat && lat <= max_lat) {
     return min(abs(min_lat - lat), abs(max_lat - lat));
   }
-  if (p.lng >= min_lng && p.lng <= min.lng) {
+  if (lng >= min_lng && lng <= max_lng) {
     return min(abs(min_lng - lng), abs(max_lng - lng));
   }
   return min(
@@ -42,9 +54,9 @@ function distance(nw, se, p) {
   );
 }
 
-function closest_pokemon(pokemons, nw, se) {
+function closest_pokemon(pokemons: PokemonType[], nw: { lat: number; lng: number }, se: { lat: number; lng: number }) {
   const min_distance = pokemons
-    .filter((p) => p.status == 'wild')
+    .filter((p) => p.status === 'wild')
     .reduce((out, p) => {
       const d = distance(nw, se, p);
       if (d < out) return d;
@@ -53,13 +65,13 @@ function closest_pokemon(pokemons, nw, se) {
   return min_distance;
 }
 
-function scanArea(pokemons, nw, se) {
-  if (nw === undefined) return;
+function scanArea(pokemons: PokemonType[], nw?: { lat: number; lng: number }, se?: { lat: number; lng: number }) {
+  if (nw === undefined || se === undefined) return 0;
   let cnt = pokemons
-    .filter((p) => p.status == 'wild')
+    .filter((p) => p.status === 'wild')
     .reduce((total, p) => {
       if (
-        p.status != true &&
+        p.status !== 'caught' &&
         p.location.lat >= se.lat &&
         p.location.lat <= nw.lat &&
         p.location.lng <= se.lng &&
@@ -73,13 +85,19 @@ function scanArea(pokemons, nw, se) {
 }
 
 function Map() {
-  const MAP_KEY = process.env.REACT_APP_MAP_KEY;
+  const MAP_KEY = process.env.NEXT_PUBLIC_MAP_KEY;
   const [status, setStatus] = useState('idle');
   const [count, setCount] = useState(0);
-  const [distance, setDistance] = useState();
-  const [nw, setNW] = useState();
-  const [se, setSE] = useState();
+  const [distance, setDistance] = useState<number>();
+  const [nw, setNW] = useState<{ lat: number; lng: number }>();
+  const [se, setSE] = useState<{ lat: number; lng: number }>();
   const [loading, setLoading] = useState(true);
+
+  const context = useContext(PokemonContext);
+  if (!context) {
+    throw new Error('Map must be used within PokemonContextProvider');
+  }
+
   const {
     pokemons,
     zoom,
@@ -90,9 +108,9 @@ function Map() {
     setPokeball,
     setBounds,
     setPokemonStatus,
-  } = useContext(PokemonContext);
+  } = context;
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     setZoom(e.zoom);
     setCenter(e.center);
     setNW(e.bounds.nw);
@@ -102,8 +120,9 @@ function Map() {
     setPokeball(null);
     setBounds(e.bounds);
   };
+
   useEffect(() => {
-    if (pokemons.length == 0) {
+    if (pokemons.length === 0) {
       setLoading(true);
     } else {
       setLoading(false);
@@ -112,11 +131,11 @@ function Map() {
 
   useEffect(() => {
     setCount(scanArea(pokemons, nw, se));
-  }, [pokemons]);
+  }, [pokemons, nw, se]);
 
   const pokemons_list = pokemons
     .filter((p) => p.status !== 'caught')
-    .map((p, index) => {
+    .map((p) => {
       return (
         <Pokemon
           key={p.id}
@@ -127,16 +146,17 @@ function Map() {
         />
       );
     });
+
   return (
-    <div className='map'>
+    <div className="map">
       {loading ? (
-        <div className='loading'>
-          <img src='/pokeball-spining.gif' />
+        <div className="loading">
+          <img src="/pokeball-spining.gif" alt="Loading" />
         </div>
       ) : (
         <>
           <GoogleMapReact
-            bootstrapURLKeys={{ key: MAP_KEY }}
+            bootstrapURLKeys={{ key: MAP_KEY || '' }}
             center={center}
             zoom={zoom}
             onChange={handleChange}

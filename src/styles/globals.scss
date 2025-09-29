@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-@import './variable';
+@import './variables';
 
 html {
   font-size: 62.5%;
@@ -93,7 +93,7 @@ main {
   top: -25px;
   left: -25px;
   &--pokeball {
-    background-image: url('./pokeball.png') !important;
+    background-image: url('/pokeball.png') !important;
     border: none;
     padding: 0;
     width: 30px !important;
