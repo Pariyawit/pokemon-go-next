@@ -16,14 +16,14 @@ function Header() {
   const { user } = useContext(PokemonContext);
 
   return (
-    <header className="header">
-      <Link href="/">
+    <header className='header'>
+      <Link href='/'>
         <div>PokémonGo</div>
       </Link>
-      <nav className="nav">
-        <ul className="nav__list">
-          <li className="nav__item">
-            <Link href="/">
+      <nav className='nav'>
+        <ul className='nav__list'>
+          <li className='nav__item'>
+            <Link href='/'>
               <span
                 className={`map-icon ${
                   pathname === '/' && 'map-icon--active'
@@ -33,8 +33,8 @@ function Header() {
               </span>
             </Link>
           </li>
-          <li className="nav__item">
-            <Link href="/pokedex">
+          <li className='nav__item'>
+            <Link href='/pokedex'>
               <span
                 className={`pokedex-icon ${
                   pathname.includes('/pokedex') && 'pokedex-icon--active'
@@ -44,7 +44,7 @@ function Header() {
               </span>
             </Link>
           </li>
-          <li className="nav__item">
+          {/* <li className="nav__item">
             <Link href="/user">
               {user ? (
                 <span>
@@ -66,7 +66,7 @@ function Header() {
                 </span>
               )}
             </Link>
-          </li>
+          </li> */}
         </ul>
       </nav>
     </header>
