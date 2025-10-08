@@ -21,6 +21,7 @@ A Next.js 15 web application with TypeScript that recreates the Pokemon Go exper
 
 1. Clone the repository
 2. Install dependencies:
+
    ```bash
    npm install
    ```
@@ -33,6 +34,7 @@ A Next.js 15 web application with TypeScript that recreates the Pokemon Go exper
 ## Development
 
 Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -42,6 +44,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 ## Build
 
 Build for production:
+
 ```bash
 npm run build
 ```
